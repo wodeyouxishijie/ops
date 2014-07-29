@@ -1,0 +1,206 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+		<title>Hello Extjs</title>
+		<link rel="stylesheet" type="text/css" href="css/ext-theme-crisp/build/resources/ext-theme-crisp-all-debug.css"/>
+		<script type="text/javascript" src="js/ext-all-debug.js"></script>
+		<script type="text/javascript" src="js/ext-locale-zh_CN.js"></script>
+	</head>
+	<script>
+		Ext.require([
+			'Ext.Msg',
+			'Ext.panel.*'
+		]);
+		Ext.onReady(function() {
+			// message box
+			//Ext.MessageBox.alert('标题','中文');
+			// panel
+			//Ext.create('Ext.panel.Panel', {
+			//	title: 'Hello',
+			//	width: 200,
+			//	height:300,
+			//	html: '<p>测试!</p>',
+			//	renderTo: Ext.getBody()
+			//});
+			
+			//createTabPanel();
+			
+			//createPanel();
+
+			//createHtmlEditor();
+
+			//createColumnPanel();
+			Ext.tip.QuickTipManager.init();
+			createLayout();
+		});
+
+		function createTable() {
+			
+		}
+
+		function createLayout() {
+			var mainPanel = new Ext.panel.Panel({
+				height:'600',
+				layout:'fit',
+				header:{
+					xtype: 'header',
+					title:'综合监控平台'
+				},
+				layout:'border',
+				renderTo: Ext.getBody(),
+				items:[{
+					// xtype: 'panel' implied by default
+					title: '菜单',
+					region:'west',
+					border:true,
+					xtype: 'treepanel',
+					listeners: {
+						itemclick: function(obj, record) {
+							if(record.data.leaf) {
+								var centerTab = Ext.getCmp('center-content');
+								var oldItem = Ext.getCmp('sub-tab-id-'+record.data.id);
+								if(oldItem) {
+									centerTab.setActiveTab(oldItem);
+								} else {
+									var newTab = new Ext.panel.Panel({
+										id:'sub-tab-id-'+record.data.id,
+										title:record.data.text,
+										layout:'fit',
+										closable:true,
+										html:'<center>'+record.data.text+'</center>'
+									});
+									
+									centerTab.add(newTab);
+									centerTab.setActiveTab(newTab);
+								}
+							}
+							
+						}
+					},
+					root:{
+						text:'根节点',
+						expanded: true,
+						children: [
+							{	id:"detention",
+								text: "detention", 
+								leaf: true
+							},
+							{ 
+								
+								text: "homework", 
+								expanded: true, 
+								children: [
+											{ id:"homework1",text: "book report", leaf: true },
+											{ id:"homework2",text: "algebra", leaf: true}
+										  ] 
+							},
+							{ 
+								text:"buy lottery tickets", 
+								leaf: true 
+							}
+						]
+					},
+					margin: '5 0 0 5',
+					width: 200,
+					height:'auto',
+					collapsible: true,   // make collapsible
+					split:false,
+					id: 'west-region-container',
+					layout: 'fit'
+				},{
+					id:'center-content',
+					region: 'center',     // center region is required, no width/height specified
+					xtype: 'tabpanel',
+					activeTab:0,
+					height:'auto',
+					layout: 'fit',
+					margin: '5 5 0 0',
+					items: [
+						new Ext.panel.Panel({
+							title:'Welcome!',
+							layout:'fit',
+							html:'<center>欢迎使用</center>'
+						})
+					]
+				}]
+			});
+			
+		}
+		
+		function createColumnPanel() {
+			new Ext.panel.Panel({
+				renderTo:Ext.getBody(),
+				width:300,
+				height:200,
+				layout:'column',
+				items:[{
+					columnWidth:.8,
+					title:'面板1',
+					height:100
+				},
+				{
+					columnWidth:.2,
+					title:'面板2'
+				}]
+			});
+		}
+
+		function createHtmlEditor() {
+			new Ext.panel.Panel({
+				renderTo:Ext.getBody(),
+				title:'面板',
+				width:300,
+				height:200,
+				items:[{
+					xtype:'htmleditor'
+				}]
+			});
+		}
+
+		function createPanel() {
+			new Ext.panel.Panel({
+				renderTo:Ext.getBody(),
+				title:'面板',
+				width:300,
+				height:200,
+				html:'<h1>面板主区域</h1>',
+				tbar:[{
+					text:'顶部工具栏topToolBar',
+					width:200
+				}],
+				bbar:[{
+					text:'底部工具栏'
+				}],
+				buttons:[{
+					text:'按钮位于footer'
+				}]
+			});
+		}
+
+		function createTabPanel() {
+			Ext.create('Ext.tab.Panel',{
+				renderTo:Ext.getBody(),
+				width:300,
+				height:400,
+				activeTab:0,
+				items:[
+					new Ext.panel.Panel({
+						title:'面板1',
+						height:200,
+						width:200,
+						html:'交罚款水电费'
+					}),
+					new Ext.panel.Panel({
+						title:'面板2',
+						height:200,
+						width:200,
+						html:'交罚款水电费2'
+					})
+				]
+			});
+		}
+
+	</script>
+	<body>
+	</body>
+</html>
