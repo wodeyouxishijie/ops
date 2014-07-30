@@ -11,6 +11,7 @@
 			'Ext.Msg',
 			'Ext.panel.*'
 		]);
+
 		Ext.onReady(function() {
 			// message box
 			//Ext.MessageBox.alert('标题','中文');
@@ -30,12 +31,134 @@
 			//createHtmlEditor();
 
 			//createColumnPanel();
-			Ext.tip.QuickTipManager.init();
-			createLayout();
-		});
-
-		function createTable() {
 			
+			createLayout();
+
+			//createMask();
+			//createLoginForm();
+
+			//createToolBar();
+
+			createDataStore();
+		});
+		
+		function createDataStore() {
+			Ext.create('Ext.data.Store', {
+				storeId:'simpsonsStore',
+				fields:['name', 'email', 'phone','choosed'],
+				pageSize:10,
+				loadMask: { msg: "正在查询，请稍后......" },
+				data:{'items':[
+					{ 'name': 'Lisa',  "email":"lisa@simpsons.com",  "phone":"555-111-1224",'choosed':false},
+					{ 'name': 'Bart',  "email":"bart@simpsons.com",  "phone":"555-222-1234" ,'choosed':false},
+					{ 'name': 'Homer', "email":"homer@simpsons.com",  "phone":"555-222-1244"  ,'choosed':false},
+					{ 'name': 'Marge', "email":"marge@simpsons.com", "phone":"555-222-1254"  ,'choosed':false},
+					{ 'name': 'Lisa',  "email":"lisa@simpsons.com",  "phone":"555-111-1224"  ,'choosed':false},
+					{ 'name': 'Bart',  "email":"bart@simpsons.com",  "phone":"555-222-1234" ,'choosed':false},
+					{ 'name': 'Homer', "email":"homer@simpsons.com",  "phone":"555-222-1244"  ,'choosed':false},
+					{ 'name': 'Marge', "email":"marge@simpsons.com", "phone":"555-222-1254" ,'choosed':false },
+					{ 'name': 'Lisa',  "email":"lisa@simpsons.com",  "phone":"555-111-1224"  ,'choosed':false},
+					{ 'name': 'Bart',  "email":"bart@simpsons.com",  "phone":"555-222-1234" ,'choosed':false},
+					{ 'name': 'Homer', "email":"homer@simpsons.com",  "phone":"555-222-1244"  ,'choosed':false},
+					{ 'name': 'Marge', "email":"marge@simpsons.com", "phone":"555-222-1254"  ,'choosed':false},
+					{ 'name': 'Lisa',  "email":"lisa@simpsons.com",  "phone":"555-111-1224"  ,'choosed':false},
+					{ 'name': 'Bart',  "email":"bart@simpsons.com",  "phone":"555-222-1234",'choosed':false },
+					{ 'name': 'Homer', "email":"homer@simpsons.com",  "phone":"555-222-1244" ,'choosed':false },
+					{ 'name': 'Marge', "email":"marge@simpsons.com", "phone":"555-222-1254" ,'choosed':false },
+					{ 'name': 'Lisa',  "email":"lisa@simpsons.com",  "phone":"555-111-1224" ,'choosed':false },
+					{ 'name': 'Bart',  "email":"bart@simpsons.com",  "phone":"555-222-1234",'choosed':false },
+					{ 'name': 'Homer', "email":"homer@simpsons.com",  "phone":"555-222-1244"  ,'choosed':false},
+					{ 'name': 'Marge11', "email":"marge@simpsons.com", "phone":"555-222-1254" ,'choosed':false }
+				]},
+				proxy: {
+					type: 'memory',
+					reader: {
+						type: 'json',
+						rootProperty: 'items'
+					}
+				}
+			});
+		}
+
+		function createToolBar() {
+			Ext.create('Ext.toolbar.Toolbar', {
+				renderTo: document.body,
+				width   : 400,
+				items: [
+					{
+						xtype    : 'textfield',
+						name     : 'field1',
+						emptyText: 'enter search term'
+					},
+					{
+						text: 'Button'
+					}
+				]
+			});
+		}
+
+		function createMask() {
+			 var myMask = new Ext.LoadMask(Ext.getBody(), {msg:"Loading ..."});  
+			 myMask.show(); 
+		}
+
+		function createLoginForm() {
+			loginWin = new Ext.Window({    
+								width:350,
+								title:'用户登录',
+								plain:true,
+								closable:true,
+								resizable:false,   
+								frame:true,
+								layout:'fit',
+								closeAction:'hide',
+								border:false,
+								modal:true,
+								items:[
+									Ext.create('Ext.form.Panel', {
+										bodyPadding: 20,
+										width: 300,
+										url:'test.php',
+										layout: 'anchor',
+										defaults: {
+											anchor: '100%'
+										},
+										defaultType: 'textfield',
+										items: [{
+											fieldLabel: '账户',
+											name: 'account',
+											allowBlank: false
+										},{
+											fieldLabel: '密码',
+											name: 'pwd',
+											inputType:'password',
+											allowBlank: false
+										}],
+										buttons: [{
+											text: '重置',
+											handler: function() {
+												this.up('form').getForm().reset();
+											}
+										}, {
+											text: '登陆',
+											handler: function() {
+												var form = this.up('form').getForm();
+												if (form.isValid()) {
+													form.submit({
+														success: function(form, action) {
+														   Ext.Msg.alert('Success', action.result.msg);
+														},
+														failure: function(form, action) {
+															Ext.Msg.alert('Failed', action.result.msg);
+														}
+													});
+												}
+											}
+										}]
+									})
+								]
+					   });
+			loginWin.show();								
 		}
 
 		function createLayout() {
@@ -67,7 +190,43 @@
 										title:record.data.text,
 										layout:'fit',
 										closable:true,
-										html:'<center>'+record.data.text+'</center>'
+										
+										items:[
+											Ext.create('Ext.grid.Panel', {
+												id:'talbeId',
+												store: Ext.data.StoreManager.lookup('simpsonsStore'),
+												selModel:{mode:'MULTI'},
+												columns: [
+												    { xtype:'checkcolumn',dataIndex:'choosed',sortable:false,text:'选择'} ,
+													{ text: 'Name',  dataIndex: 'name' },
+													{ text: 'Email', dataIndex: 'email', flex: 1 },
+													{ text: 'Phone', dataIndex: 'phone' }
+												], 
+												height: 200,
+												width: 400,
+												dockedItems: [{
+													xtype: 'pagingtoolbar',
+													store: Ext.data.StoreManager.lookup('simpsonsStore'),
+													dock: 'bottom',
+													displayInfo: true,
+													displayMsg: '<font size=2>第 {0} 条到第 {1} 条，一共 【{2}】 条记录</font>',  
+													emptyMsg: "没有符合查询条件的信息" 
+												},
+												{
+													xtype: 'toolbar',
+													dock: 'top',
+													items:[{xtype:'textfield'},{ xtype: 'button', text: '查询',icon:'query'},'->',
+															{ xtype: 'button', text: '新增',icon:'add'},'-',
+															{ xtype: 'button', 
+															  text: '删除',
+															  icon:'delete',
+															  handler:function() {
+																
+															  }}
+													]
+												}],
+											})
+										]
 									});
 									
 									centerTab.add(newTab);
